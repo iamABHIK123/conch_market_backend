@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "cart_item")
 @Data
@@ -31,6 +33,7 @@ public class CartItem {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_cart"))
+	@JsonIgnore
 	private User user;
 
 //	@ManyToOne

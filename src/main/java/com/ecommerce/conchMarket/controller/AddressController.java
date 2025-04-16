@@ -1,7 +1,12 @@
 package com.ecommerce.conchMarket.controller;
 
+import com.ecommerce.conchMarket.Repository.UserRepo;
 import com.ecommerce.conchMarket.service.AddressService;
+import com.ecommerce.conchMarket.utility.User;
 import com.ecommerce.conchMarket.utility.UserAddress;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,23 +15,31 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
-@RequestMapping("/api/addresses")
+
+@RequestMapping("/addresses")
 public class AddressController {
 
     @Autowired
     private AddressService addressService;
 
+    @Autowired
+    private UserRepo userRepo;
+    
     // Create a new UserAddress
-    @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
+    
     @PostMapping
-    public ResponseEntity<UserAddress> createUserAddress(@RequestBody UserAddress userAddress) {
+    public ResponseEntity<UserAddress> createUserAddress(@RequestBody UserAddress userAddress,HttpServletRequest request) {
+    	System.out.println("here is the user address"+userAddress);
+    	 Long userId = (Long) request.getAttribute("userId");
+    	 @SuppressWarnings("deprecation")
+		User user=userRepo.getById(userId);
+    	 userAddress.setUser(user);
         UserAddress savedUserAddress = addressService.saveUserAddress(userAddress);
         return ResponseEntity.ok(savedUserAddress);
     }
 
     // Get all UserAddresses
-    @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
+    
     @GetMapping
     public ResponseEntity<List<UserAddress>> getAllUserAddresses() {
         List<UserAddress> userAddresses = addressService.getAllUserAddresses();
@@ -34,7 +47,7 @@ public class AddressController {
     }
 
     // Get a UserAddress by ID
-    @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
+    
     @GetMapping("/{id}")
     public ResponseEntity<UserAddress> getUserAddressById(@PathVariable Long id) {
         Optional<UserAddress> userAddress = addressService.getUserAddressById(id);
@@ -43,7 +56,7 @@ public class AddressController {
     }
 
     // Update a UserAddress
-    @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
+    
     @PutMapping("/{id}")
     public ResponseEntity<UserAddress> updateUserAddress(@PathVariable Long id, @RequestBody UserAddress userAddress) {
         Optional<UserAddress> existingUserAddress = addressService.getUserAddressById(id);
@@ -57,7 +70,7 @@ public class AddressController {
     }
 
     // Delete a UserAddress by ID
-    @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserAddress(@PathVariable Long id) {
         Optional<UserAddress> userAddress = addressService.getUserAddressById(id);

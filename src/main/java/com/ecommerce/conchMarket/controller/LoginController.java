@@ -43,7 +43,7 @@ public class LoginController {
 	        	RefreshToken token=refreshTokenService.createRefreshToken(loggedInUser.getEmail());
 	        	System.out.println("refreshToken : "+token);
 	            // Generate JWT token
-	            String accessToken = jwtService.generateToken(loggedInUser.getEmail(),loggedInUser.getRole());
+	            String accessToken = jwtService.generateToken(loggedInUser.getEmail(),loggedInUser.getRole(),loggedInUser.getId());
 	            String userType = loggedInUser.getRole();
 	            System.out.println("accessToken : "+accessToken);
 	            JwtResponseDTO responseDTO = JwtResponseDTO.builder()
@@ -66,7 +66,7 @@ public class LoginController {
 				.map(refreshTokenService::verifyExpiration)
 				.map(RefreshToken::getUser)
 				.map(user->{
-					String accessToken=jwtService.generateToken(user.getUsername(),user.getRole());
+					String accessToken=jwtService.generateToken(user.getUsername(),user.getRole(),user.getId());
 					return JwtResponseDTO.builder()
 							.accessToken(accessToken)
 							.token(refreshToken.getToken())

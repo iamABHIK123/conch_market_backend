@@ -47,13 +47,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
         String userType = null;
+        Long userId = null;
         // Check if the header starts with "Bearer "
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7); // Extract token
             try {
                 username = jwtService.extractUsername(token); // Extract username from token
                 userType = jwtService.extractUserRole(token); // Extract user type (role) from token
-                System.out.println("Extracted User Role: " + userType); 
+                userId = jwtService.extractUserId(token); // 👈 Extract 
+                System.out.println("Extracted User Role: " + userId); 
             } catch (ExpiredJwtException e) {
                 System.out.println("⚠️ JWT Expired: " + e.getMessage());
                 //response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token Expired");
@@ -77,6 +79,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 // 🔥 Store user role in request attributes for controllers to use
                 request.setAttribute("userType", userType);
+                request.setAttribute("userId", userId);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

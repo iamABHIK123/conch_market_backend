@@ -73,4 +73,10 @@ public class CartItemServiceImpl implements CartItemService {
 	public Long totalProductCount() {
 		return cartItemRepo.count();
 	}
+	
+	@Override
+	public List<CartItem> getCartItemsByUserId(Long userId) {
+	    return cartItemRepo.findProductsByUserId(userId);
+	}
+
 }

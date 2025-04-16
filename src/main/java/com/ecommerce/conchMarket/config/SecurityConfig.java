@@ -48,7 +48,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/products","/new-items/**","/top-products/**","/api/categories/**","/api/subcategories/**","/cloudinary/upload","/login","/users/getAll","/auth/refreshToken", "/signup", "/auth/logout","/products/category/**","/products/totalCategories","/products/totalProducts","/users/totalUsers","/cart/items").permitAll()
+                .requestMatchers("/addresses","/products","/new-items/**","/top-products/**","/api/categories/**","/api/subcategories/**","/cloudinary/upload","/login","/users/getAll","/auth/refreshToken", "/signup", "/auth/logout","/products/category/**","/products/totalCategories",
+                		"/products/totalProducts","/users/totalUsers","/cart/**","/cart/items/user/**","cart/items/count/**").permitAll()
                 .requestMatchers("/auth/user/**").hasAuthority("ROLE_USER")
                 .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated() // Protect all other endpoints

@@ -1,6 +1,7 @@
 package com.ecommerce.conchMarket.controller;
 
 import com.ecommerce.conchMarket.Repository.CartItemRepo;
+import com.ecommerce.conchMarket.Repository.UserRepo;
 import com.ecommerce.conchMarket.dto.CartItemDeleteDTO;
 import com.ecommerce.conchMarket.dto.CartItemRequest;
 import com.ecommerce.conchMarket.service.CartItemService;
@@ -29,7 +30,9 @@ public class CartItemController {
 	private CartItemService cartItemService;
 	@Autowired
 	private CartItemRepo cartItemRepo;
-	
+	@Autowired
+	private UserRepo userRepo;
+
 	@Autowired
 	private ProductService productService;
 
@@ -63,11 +66,24 @@ public class CartItemController {
 		return ResponseEntity.ok(new ArrayList<>(uniqueCartItems.values()));
 	}
 
+	@GetMapping("/items/user/{userId}")
+	public ResponseEntity<List<CartItem>> getCartItemsByUserId(@PathVariable Long userId) {
+	    try {
+	        List<CartItem> userCartItems = cartItemService.getCartItemsByUserId(userId);
+	        return ResponseEntity.ok(userCartItems);
+	    } catch (Exception e) {
+	        System.out.println("Error fetching cart items for userId " + userId + ": " + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	    }
+	}
+
+
 	@PostMapping("/items")
 	public ResponseEntity<CartItem> addOrUpdateCartItem(@RequestBody CartItemRequest request) {
 		// Get the existing cart item for this user and productId
+		System.out.println("Cart Item Req"+request);
 		CartItem existingCartItem = cartItemService.searchByProductIdAndUserId(request.getProductId(),
-				request.getUser().getId());
+				request.getUserId());
 
 		if (existingCartItem != null) {
 			// If the item already exists, update its quantity
@@ -80,9 +96,10 @@ public class CartItemController {
 			System.out.println("--------------- else is callled-------");
 			CartItem newCartItem = new CartItem();
 			newCartItem.setProductId(request.getProductId());
-			newCartItem.setUser(request.getUser());
+			User user = userRepo.getReferenceById(request.getUserId());
+			newCartItem.setUser(user);
 			newCartItem.setQuantity(request.getQuantity());
-	System.out.println(newCartItem);
+			System.out.println(newCartItem);
 
 			CartItem savedCartItem = cartItemService.addCartItem(newCartItem); // Add the new cart item
 			return ResponseEntity.ok(savedCartItem);
@@ -92,8 +109,9 @@ public class CartItemController {
 	@PostMapping("/items/quantity")
 	public ResponseEntity<?> updateCartItemQuantity(@RequestBody CartItemRequest request) {
 		// Get the existing cart item for this user and productId
+		System.out.println("here is the cart item details-"+request);
 		CartItem existingCartItem = cartItemService.searchByProductIdAndUserId(request.getProductId(),
-				request.getUser().getId());
+				request.getUserId());
 
 		if (existingCartItem != null) {
 			// If the item already exists, update its quantity
@@ -122,10 +140,10 @@ public class CartItemController {
 		}
 	}
 
-	@GetMapping("/items/count")
-	public ResponseEntity<Long> getTotalCartItems() {
-		Long count = cartItemService.totalProductCount();
-		System.out.println("------------------"+count);
+	@GetMapping("/items/count/{userId}")
+	public ResponseEntity<Long> getTotalCartItems(@PathVariable Long userId) {
+		Long count = cartItemRepo.findTotalProductsByUserId(userId);
+		System.out.println("------------------" + count);
 		return ResponseEntity.ok(count);
 	}
 

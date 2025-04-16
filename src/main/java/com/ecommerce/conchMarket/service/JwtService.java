@@ -36,10 +36,11 @@ public class JwtService {
 	}
 
 	// Generate token with given user name
-	public String generateToken(String userName, String userType) {
+	public String generateToken(String userName, String userType,Long userId) {
 		System.out.println("GENERATE TOKEN FUN IS CALLED");
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("userType", userType);
+		claims.put("userId", userId);
 		return createToken(claims, userName);
 	}
 
@@ -59,6 +60,11 @@ public class JwtService {
 	// Extract the username from the token
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
+	}
+	
+	// Extract the user ID from the token
+	public Long extractUserId(String token) {
+	    return extractClaim(token, claims -> claims.get("userId", Long.class));
 	}
 
 	// Extract the expiration date from the token

@@ -25,5 +25,6 @@ public interface CartItemService {
 	List<CartItem> getCartItemByProductId(Long productId);
 	
 	Long totalProductCount();
-
+	
+	List<CartItem> getCartItemsByUserId(Long userId);
 }
